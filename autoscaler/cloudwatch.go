@@ -21,7 +21,7 @@ func NewCloudWatch(awsSession *session.Session) *CloudWatch {
 	}
 }
 
-func (c *CloudWatch) sumMetric(metricName, tableName string, startTime time.Time) (int64, error) {
+func (c *CloudWatch) sumMetric(metricName, tableName string, startTime time.Time) (float64, error) {
 	endTime := startTime.Add(time.Duration(c.EvaluationMinutes) * time.Minute)
 	input := &cloudwatch.GetMetricStatisticsInput{
 		Dimensions: []*cloudwatch.Dimension{
@@ -49,21 +49,21 @@ func (c *CloudWatch) sumMetric(metricName, tableName string, startTime time.Time
 		return 0, nil
 	}
 
-	return int64(*out.Datapoints[0].Sum + .5), nil
+	return *out.Datapoints[0].Sum, nil
 }
 
-func (c *CloudWatch) ReadThrottleEvents(tableName string, startTime time.Time) (int64, error) {
+func (c *CloudWatch) ReadThrottleEvents(tableName string, startTime time.Time) (float64, error) {
 	return c.sumMetric("ReadThrottleEvents", tableName, startTime)
 }
 
-func (c *CloudWatch) WriteThrottleEvents(tableName string, startTime time.Time) (int64, error) {
+func (c *CloudWatch) WriteThrottleEvents(tableName string, startTime time.Time) (float64, error) {
 	return c.sumMetric("WriteThrottleEvents", tableName, startTime)
 }
 
-func (c *CloudWatch) ConsumedReadCapacityUnits(tableName string, startTime time.Time) (int64, error) {
+func (c *CloudWatch) ConsumedReadCapacityUnits(tableName string, startTime time.Time) (float64, error) {
 	return c.sumMetric("ConsumedReadCapacityUnits", tableName, startTime)
 }
 
-func (c *CloudWatch) ConsumedWriteCapacityUnits(tableName string, startTime time.Time) (int64, error) {
+func (c *CloudWatch) ConsumedWriteCapacityUnits(tableName string, startTime time.Time) (float64, error) {
 	return c.sumMetric("ConsumedWriteCapacityUnits", tableName, startTime)
 }
